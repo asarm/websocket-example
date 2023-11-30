@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ room_name }} Details</title>
+    <!-- Add Bootstrap CSS link -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-4">{{ room_name }} Details</h1>
+        <!-- Input for update frequency -->
+        <div class="mb-3">
+            <label for="updateInterval">Update Interval (seconds): </label>
+            <input type="number" id="updateInterval" value="5" step="0.5" min="0.1" max="60">
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Live Data</h5>
+                <p class="card-text">Humidity: <span id="humidity">{{ room_details.humidity }}</span></p>
+                <p class="card-text">Temperature: <span id="temperature">{{ room_details.temperature }}</span></p>
+                <p class="card-text">CO2: <span id="co2">{{ room_details.co2 }}</span></p>
+                <p class="card-text">Light: <span id="light">{{ room_details.light }}</span></p>
+                <p class="card-text">Pir: <span id="pir">{{ room_details.pir }}</span></p>
+            </div>
+        </div>
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Historical Data</h5>
+                <!-- Set the width and half of the current height inline -->
+                <canvas id="roomChart" style="width: 300px; height: 75px;"></canvas>
+            </div>
+        </div>
+    </div>
+    <!-- Add Bootstrap JS and Popper.js scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        var roomChart;
+
+        function updateRoomDetails() {
+            var roomName = "{{ room_name }}";
+            var updateInterval = parseFloat(document.getElementById("updateInterval").value) * 1000;
+
+            fetch("/api/room/" + roomName)
+                .then(response => response.json())
+                .then(data => {
+                    var data_len = data[roomName].co2.length;
+
+                    document.getElementById("humidity").innerText = data[roomName].humidity[data_len-1];
+                    document.getElementById("temperature").innerText = data[roomName].temperature[data_len-1];
+                    document.getElementById("co2").innerText = data[roomName].co2[data_len-1];
+                    document.getElementById("light").innerText = data[roomName].light[data_len-1];
+                    document.getElementById("pir").innerText = data[roomName].pir[data_len-1];
+
+                    // Get the chart canvas element
+                    var ctx = document.getElementById("roomChart").getContext("2d");
+
+                    // Create or update the chart
+                    if (!roomChart) {
+                        roomChart = new Chart(ctx, {
+                            type: "line",
+                            data: {
+                                labels: Array.from({ length: data_len }, (_, i) => i + 1),
+                                datasets: [
+                                    {
+                                        label: "CO2",
+                                        borderColor: "rgb(75, 192, 192)",
+                                        data: data[roomName].co2,
+                                    },
+                                ],
+                            },
+                            options: {
+                                scales: {
+                                    x: {
+                                        type: 'linear',
+                                        position: 'bottom'
+                                    },
+                                    y: {
+                                        min: Math.min(...data[roomName].co2)-30,
+                                        max: Math.max(...data[roomName].co2)+30,
+                                        ticks: {
+                                            stepSize: 1
+                                        }
+                                    }
+                                }
+                            },
+                        });
+                        roomChart.update()
+                    } else {
+                        console.log(data[roomName].co2);
+                        roomChart.data.labels = Array.from({ length: data_len }, (_, i) => i + 1);
+                        roomChart.data.datasets[0].data = data[roomName].co2;
+                        roomChart.update();
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+
+            setTimeout(updateRoomDetails, updateInterval);
+        }
+
+        // Update room details on page load
+        updateRoomDetails();
+    </script>
+</body>
+</html>

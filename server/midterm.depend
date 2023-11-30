@@ -1,0 +1,9 @@
+# depslib dependency file v1.0
+1701089236 source:d:\iot_midterm\midterm\main.c
+	<stdio.h>
+	<stdlib.h>
+	<winsock2.h>
+	<stdlib.h>
+	<dirent.h>
+	<stdbool.h>
+

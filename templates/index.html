@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room List</title>
+    <!-- Add Bootstrap CSS link -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .room-box {
+            box-shadow: 0 4px 8px rgba(10, 10, 0, 0.5);
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: green
+        }
+        .room-box:hover {
+            background-color: rgb(75, 131, 108);
+            box-shadow: 0 4px 8px rgba(30, 30, 10, 0.75);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-4">Room List</h1>
+        <div class="row">
+            {% for room_name in room_names %}
+                <div class="col-md-4">
+                    <a href="/{{room_name}}" style="color:white">
+                        <div class="room-box text-center">
+                            <b>{{ room_name }}</b>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <!-- Add Bootstrap JS and Popper.js scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
