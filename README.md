@@ -5,7 +5,7 @@ An app that simulates an IoT ecosystem. The server-side was written in C. It fun
 Follow these steps to run locally:<br>
 1) Run the web app (using "python web_app.py")<br>
 2) Run the consumer side (using "python consumer.py")<br>
-3) Run the server finally <br>
+3) Run the server finally (use following command to build code "gcc -o server.exe main.c -lws2_32")<br>
 
 <div>
   <img src="images/list.jpg" height="60%" width="80%"> </img>
