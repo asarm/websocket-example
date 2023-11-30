@@ -3,12 +3,12 @@
 #include <winsock2.h>
 #include <stdlib.h>
 #include <dirent.h>
-#include<stdbool.h>
+#include <stdbool.h>
 
 #define SERVER_PORT 8080
 
 typedef struct SensorData {
-  char roomName[4];
+  char roomName[5];
   float co2Concentration;
   float humidity;
   float light;
@@ -23,13 +23,14 @@ int storeCFilenames(char *filenames[]) {
 
   dir = opendir("data");
   if (dir == NULL) {
-    return;
+    return 0;
   }
 
   while ((ent = readdir(dir)) != NULL) {
     if (ent->d_name[0] == 'C') {
       filenames[i] = malloc(sizeof(ent->d_name));
       strcpy(filenames[i], ent->d_name);
+
       i++;
     }
   }
@@ -54,7 +55,7 @@ void removeFirstChar(char *str) {
     str[i - 1] = '\0';
 }
 
-char* readCSV(const char *filepath, char *room_name, int time_index){
+char** readCSV(const char *filepath, char *room_name, int time_index){
     char sensor_titles[5][15] = {"co2", "humidity", "light", "pir", "temperature"};
     char** room_data = malloc(5 * sizeof(char*));
     for (int i = 0; i < 5; i++) {
@@ -154,12 +155,12 @@ int main() {
   while (1) {
     char globalString[40*30+30] = "";
 
-    printf("\nTIME: %d", timeIndex);
+    printf("\nSystem Time: %d", timeIndex);
 
     for(int i=0; i<fileCount;i++){
         // mainpath, roomname, timeindex
         char** room_data = readCSV(data_path, filenames[i], timeIndex);
-
+        
         snprintf(sensorData.roomName, sizeof(sensorData.roomName), "%s", filenames[i]);
 
         sensorData.co2Concentration = strtof(room_data[0], NULL);

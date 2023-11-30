@@ -31,6 +31,7 @@ def api_room_detail(room_name):
 # Update the rooms_data dictionary with the received data
 def update_rooms(data):
     global rooms_data
+    
     rooms_data.update(data.get('rooms', {}))
     room_names = rooms_data.keys()
 
